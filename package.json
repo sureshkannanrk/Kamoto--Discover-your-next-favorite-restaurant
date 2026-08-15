@@ -21,6 +21,7 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
+    "@getbrevo/brevo": "^6.0.3",
     "@supabase/supabase-js": "^2.112.3",
     "bcryptjs": "^2.4.3",
     "connect-pg-simple": "^10.0.0",
@@ -28,7 +29,6 @@
     "express": "^4.19.2",
     "express-session": "^1.18.0",
     "multer": "^2.2.0",
-    "pg": "^8.13.1",
-    "resend": "^6.20.0"
+    "pg": "^8.13.1"
   }
 }
