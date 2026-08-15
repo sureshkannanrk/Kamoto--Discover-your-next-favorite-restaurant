@@ -1,0 +1,13 @@
+<%
+  const v = Number(value) || 0;
+  const full = Math.floor(v);
+  const frac = v - full;
+  let half = 0;
+  let extra = 0;
+  if (frac >= 0.75) extra = 1;
+  else if (frac >= 0.25) half = 1;
+  const filledCount = Math.min(5, full + extra);
+%>
+<% for (let i = 1; i <= 5; i++) { %>
+  <span class="star <%= i <= filledCount ? 'filled' : (i === filledCount + 1 && half ? 'half' : '') %>">★</span>
+<% } %>

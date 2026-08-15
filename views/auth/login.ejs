@@ -1,0 +1,29 @@
+<%- include('../partials/header') %>
+
+<section class="auth-card card">
+  <p class="login-quote">&#8220;Good food is the foundation of genuine happiness.&#8221;</p>
+  <h1>Welcome back to Kamoto</h1>
+
+  <form method="post" action="/login" class="form-card" data-validate>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" maxlength="255" value="<%= user.email %>" required />
+      <% if (errors.email) { %><p class="field-error"><%= errors.email %></p><% } %>
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" maxlength="128" required />
+      <% if (errors.password) { %><p class="field-error"><%= errors.password %></p><% } %>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block">Log in</button>
+  </form>
+
+  <p class="auth-alt"><a href="/forgot-password">Forgot your password?</a></p>
+  <p class="auth-alt">New to Kamoto? <a href="/register">Create an account</a></p>
+</section>
+
+<%- include('../partials/footer') %>

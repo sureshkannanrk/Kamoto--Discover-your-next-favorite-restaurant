@@ -1,0 +1,82 @@
+<%- include('partials/header') %>
+
+<section class="page-header">
+  <h1>My Profile</h1>
+  <p>Edit your profile and review your activity.</p>
+</section>
+
+<div class="profile-layout">
+  <section class="card profile-edit-card">
+    <h2>Profile photo</h2>
+    <div class="profile-info">
+      <% if (currentUser.avatar_url) { %>
+        <img class="avatar avatar-lg" src="<%= currentUser.avatar_url %>" alt="<%= currentUser.name %>" />
+      <% } else { %>
+        <div class="avatar avatar-lg placeholder-avatar">👤</div>
+      <% } %>
+      <div>
+        <h3><%= currentUser.name %></h3>
+        <p class="muted"><%= currentUser.email %> &middot; <%= currentUser.role === 'owner' ? 'Restaurant owner' : 'Customer' %></p>
+      </div>
+    </div>
+    <form method="post" action="/profile/avatar" class="avatar-form" enctype="multipart/form-data" data-validate>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <input type="file" name="avatar" accept="image/jpeg,image/png,image/gif,image/webp" required />
+      <button type="submit" class="btn btn-ghost btn-sm">Upload photo</button>
+    </form>
+
+    <h2 style="margin-top:24px">Name</h2>
+    <form method="post" action="/profile/name" class="form-card" data-validate>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <div class="field">
+        <label for="name">Full name</label>
+        <input id="name" name="name" type="text" maxlength="100" value="<%= currentUser.name %>" required />
+      </div>
+      <button type="submit" class="btn btn-primary btn-sm">Save name</button>
+    </form>
+  </section>
+
+  <section class="profile-activity">
+    <% if (user.role === 'owner' && restaurants.length > 0) { %>
+      <div class="card" style="padding:20px;margin-bottom:20px">
+        <h2>My Restaurants</h2>
+        <ul class="plain-list">
+          <% restaurants.forEach(function (r) { %>
+            <li>
+              <a href="/restaurants/<%= r.id %>"><%= r.name %></a>
+              <span class="muted"><%= r.cuisine %> &middot; <%= r.price_range %></span>
+            </li>
+          <% }); %>
+        </ul>
+      </div>
+    <% } %>
+
+    <div class="card" style="padding:20px">
+      <h2>My Reviews</h2>
+      <% if (reviews.length === 0) { %>
+        <p class="muted">You haven't reviewed any restaurants yet.</p>
+      <% } else { %>
+        <ul class="review-list">
+          <% reviews.forEach(function (rev) { %>
+            <li class="review-card">
+              <div class="review-head">
+                <a href="/restaurants/<%= rev.restaurant_id %>" class="review-restaurant"><%= rev.restaurant_name %></a>
+                <span class="review-stars">
+                  <% for (let i = 1; i <= 5; i++) { %>
+                    <span class="star <%= i <= rev.rating ? 'filled' : '' %>">★</span>
+                  <% } %>
+                </span>
+                <span class="review-date"><%= rev.created_at %></span>
+              </div>
+              <% if (rev.comment) { %>
+                <p class="review-comment"><%= rev.comment %></p>
+              <% } %>
+            </li>
+          <% }); %>
+        </ul>
+      <% } %>
+    </div>
+  </section>
+</div>
+
+<%- include('partials/footer') %>

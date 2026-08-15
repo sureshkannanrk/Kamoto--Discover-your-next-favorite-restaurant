@@ -1,0 +1,103 @@
+<%
+  const action = editing
+    ? '/restaurants/' + restaurant.id
+    : '/restaurants';
+%>
+
+<form method="post" action="<%= action %>" class="card form-card" data-validate enctype="multipart/form-data">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+  <div class="form-section">
+    <h2>Details</h2>
+
+    <div class="field">
+      <label for="name">Restaurant name</label>
+      <input id="name" name="name" type="text" maxlength="100" value="<%= restaurant.name || '' %>" required />
+      <% if (errors.name) { %><p class="field-error"><%= errors.name %></p><% } %>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="cuisine">Cuisine</label>
+        <input id="cuisine" name="cuisine" type="text" maxlength="60" value="<%= restaurant.cuisine || '' %>" placeholder="e.g. Italian, Sushi, Mexican" required />
+        <% if (errors.cuisine) { %><p class="field-error"><%= errors.cuisine %></p><% } %>
+      </div>
+      <div class="field">
+        <label for="price_range">Price range</label>
+        <select id="price_range" name="price_range" required>
+          <option value="">Select...</option>
+          <% priceRanges.forEach(function (p) { %>
+            <option value="<%= p %>" <%= restaurant.price_range === p ? 'selected' : '' %>><%= p %> <%= p.length === 1 ? 'Inexpensive' : p.length === 2 ? 'Moderate' : p.length === 3 ? 'Pricey' : 'Very expensive' %></option>
+          <% }); %>
+        </select>
+        <% if (errors.price_range) { %><p class="field-error"><%= errors.price_range %></p><% } %>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="address">Address</label>
+      <input id="address" name="address" type="text" maxlength="255" value="<%= restaurant.address || '' %>" required />
+      <% if (errors.address) { %><p class="field-error"><%= errors.address %></p><% } %>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="phone">Phone</label>
+        <input id="phone" name="phone" type="text" maxlength="30" value="<%= restaurant.phone || '' %>" required />
+        <% if (errors.phone) { %><p class="field-error"><%= errors.phone %></p><% } %>
+      </div>
+      <div class="field">
+        <label for="image">Photo <span class="optional">(optional, from your device)</span></label>
+        <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/gif,image/webp" />
+        <% if (errors.image) { %><p class="field-error"><%= errors.image %></p><% } %>
+        <% if (restaurant.image_url) { %>
+          <p class="hint current-image">
+            Current photo:
+            <img class="avatar" src="<%= restaurant.image_url %>" alt="Current photo" />
+          </p>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="description">Description <span class="optional">(optional)</span></label>
+      <textarea id="description" name="description" rows="4" maxlength="2000"><%= restaurant.description || '' %></textarea>
+      <% if (errors.description) { %><p class="field-error"><%= errors.description %></p><% } %>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h2>Menu &amp; Prices</h2>
+    <p class="muted">Add the dishes you serve with their prices. Prices are in your local currency.</p>
+    <% if (errors.menu_items) { %><p class="field-error"><%= errors.menu_items %></p><% } %>
+
+    <div id="menu-items">
+      <% menu.forEach(function (item, index) { %>
+        <div class="menu-row" data-index="<%= index %>">
+          <div class="field">
+            <label for="menu-name-<%= index %>">Item name</label>
+            <input id="menu-name-<%= index %>" type="text" name="menu_items[<%= index %>][name]" maxlength="100" value="<%= item.name || '' %>" required />
+          </div>
+          <div class="field menu-price-field">
+            <label for="menu-price-<%= index %>">Price</label>
+            <input id="menu-price-<%= index %>" type="number" name="menu_items[<%= index %>][price]" min="0" max="99999" step="0.01" value="<%= item.price !== '' && item.price != null ? item.price : '' %>" required />
+          </div>
+          <div class="field menu-desc-field">
+            <label for="menu-desc-<%= index %>">Description <span class="optional">(optional)</span></label>
+            <input id="menu-desc-<%= index %>" type="text" name="menu_items[<%= index %>][description]" maxlength="300" value="<%= item.description || '' %>" />
+          </div>
+          <button type="button" class="btn btn-ghost btn-sm remove-item" data-remove="<%= index %>" <%= menu.length === 1 ? 'disabled' : '' %>>Remove</button>
+          <% const itemErr = errors['item_' + index]; %>
+          <% if (itemErr) { %><p class="field-error menu-error"><%= itemErr %></p><% } %>
+        </div>
+      <% }); %>
+    </div>
+
+    <button type="button" class="btn btn-ghost btn-sm" id="add-item">Add another item</button>
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary"><%= editing ? 'Save changes' : 'Add restaurant' %></button>
+    <a href="<%= editing ? '/restaurants/' + restaurant.id : '/dashboard' %>" class="btn btn-ghost">Cancel</a>
+  </div>
+</form>

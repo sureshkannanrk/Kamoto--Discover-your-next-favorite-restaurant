@@ -1,0 +1,72 @@
+<%- include('partials/header') %>
+
+<section class="hero">
+  <h1>Discover your next favorite restaurant</h1>
+  <p>Browse menus, compare prices, and read real reviews before you choose.</p>
+</section>
+
+<form method="get" action="/" class="search-bar">
+  <input
+    type="text"
+    name="q"
+    value="<%= query %>"
+    placeholder="Search by name, cuisine, or location..."
+    aria-label="Search restaurants"
+  />
+  <select name="cuisine" aria-label="Filter by cuisine">
+    <option value="">All cuisines</option>
+    <% cuisines.forEach(function (c) { %>
+      <option value="<%= c %>" <%= selectedCuisine === c ? 'selected' : '' %>><%= c %></option>
+    <% }); %>
+  </select>
+  <select name="sort" aria-label="Sort by">
+    <option value="newest" <%= sort === 'newest' ? 'selected' : '' %>>Newest first</option>
+    <option value="oldest" <%= sort === 'oldest' ? 'selected' : '' %>>Oldest first</option>
+    <option value="name_asc" <%= sort === 'name_asc' ? 'selected' : '' %>>Name (A&ndash;Z)</option>
+    <option value="name_desc" <%= sort === 'name_desc' ? 'selected' : '' %>>Name (Z&ndash;A)</option>
+    <option value="rating_desc" <%= sort === 'rating_desc' ? 'selected' : '' %>>Highest rated</option>
+    <option value="price_asc" <%= sort === 'price_asc' ? 'selected' : '' %>>Price (low to high)</option>
+    <option value="price_desc" <%= sort === 'price_desc' ? 'selected' : '' %>>Price (high to low)</option>
+  </select>
+  <button type="submit" class="btn btn-primary">Search</button>
+  <% if (query || selectedCuisine || sort !== 'newest') { %>
+    <a href="/" class="btn btn-ghost">Clear</a>
+  <% } %>
+</form>
+
+<% if (restaurants.length === 0) { %>
+  <div class="empty-state">
+    <h2>No restaurants yet</h2>
+    <p>
+      Kamoto is brand new. Are you a restaurant owner?
+      <a href="/register">Create an owner account</a> and add the first restaurant.
+    </p>
+  </div>
+<% } else { %>
+  <div class="restaurant-grid">
+    <% restaurants.forEach(function (r) { %>
+      <a href="/restaurants/<%= r.id %>" class="card restaurant-card">
+        <% if (r.image_url) { %>
+          <img class="card-image" src="<%= r.image_url %>" alt="<%= r.name %>" loading="lazy" />
+        <% } else { %>
+          <div class="card-image placeholder">🍽️</div>
+        <% } %>
+        <div class="card-body">
+          <h3 class="card-title"><%= r.name %></h3>
+          <p class="card-meta">
+            <span><%= r.cuisine %></span>
+            <span class="price-range"><%= r.price_range %></span>
+          </p>
+          <p class="card-rating">
+            <%- include('partials/_stars', { value: r.average_rating }) %>
+            <span class="rating-num"><%= Number(r.average_rating).toFixed(1) %></span>
+            <span class="review-count">(<%= r.review_count %> review<%= r.review_count === 1 ? '' : 's' %>)</span>
+          </p>
+          <p class="card-address"><%= r.address %></p>
+        </div>
+      </a>
+    <% }); %>
+  </div>
+<% } %>
+
+<%- include('partials/footer') %>

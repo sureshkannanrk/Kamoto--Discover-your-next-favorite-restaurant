@@ -1,0 +1,10 @@
+node_modules/
+*.log
+.DS_Store
+kamoto.db
+kamoto.db-journal
+kamoto.db-wal
+kamoto.db-shm
+.env
+server.pid
+public/uploads/*

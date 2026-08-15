@@ -1,0 +1,33 @@
+<%- include('../partials/header') %>
+
+<section class="auth-card card logout-card">
+  <div class="logout-icon">👋</div>
+  <h1>See you soon!</h1>
+  <% if (name) { %>
+    <p class="muted">You have been logged out. Goodbye, <%= name %> — we hope to see you again.</p>
+  <% } else { %>
+    <p class="muted">You have been logged out successfully.</p>
+  <% } %>
+  <p class="muted logout-countdown">Taking you back to the home page in <span id="countdown">5</span> seconds...</p>
+  <div class="error-actions">
+    <a href="/" class="btn btn-primary">Go to home</a>
+    <a href="/login" class="btn btn-ghost">Log in again</a>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var seconds = 5;
+    var el = document.getElementById('countdown');
+    var timer = setInterval(function () {
+      seconds -= 1;
+      if (el) el.textContent = seconds;
+      if (seconds <= 0) {
+        clearInterval(timer);
+        window.location.href = '/';
+      }
+    }, 1000);
+  })();
+</script>
+
+<%- include('../partials/footer') %>

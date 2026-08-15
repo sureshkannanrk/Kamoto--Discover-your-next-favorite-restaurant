@@ -1,0 +1,16 @@
+<%- include('partials/header') %>
+
+<section class="error-page">
+  <div class="error-code"><%= code %></div>
+  <h1><%= title %></h1>
+  <p class="error-message"><%= message %></p>
+  <% if (typeof showStack !== 'undefined' && showStack && message) { %>
+    <pre class="error-stack"><%= message %></pre>
+  <% } %>
+  <div class="error-actions">
+    <a href="/" class="btn btn-primary">Back to home</a>
+    <a href="javascript:history.back()" class="btn btn-ghost">Go back</a>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

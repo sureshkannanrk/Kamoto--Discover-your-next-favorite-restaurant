@@ -1,0 +1,142 @@
+<%- include('partials/header') %>
+
+<nav class="breadcrumb">
+  <a href="/">Home</a> <span>/</span> <%= restaurant.name %>
+</nav>
+
+<section class="restaurant-detail">
+  <div class="detail-header">
+    <div class="detail-info">
+      <h1><%= restaurant.name %></h1>
+      <p class="detail-meta">
+        <span class="badge"><%= restaurant.cuisine %></span>
+        <span class="badge price-range"><%= restaurant.price_range %></span>
+      </p>
+      <div class="detail-rating">
+        <%- include('partials/_stars', { value: stats.averageRating }) %>
+        <strong><%= Number(stats.averageRating).toFixed(1) %></strong>
+        <span class="review-count">based on <%= stats.reviewCount %> review<%= stats.reviewCount === 1 ? '' : 's' %></span>
+      </div>
+    </div>
+    <% if (isOwnerOf) { %>
+      <div class="detail-actions">
+        <a href="/restaurants/<%= restaurant.id %>/edit" class="btn btn-primary">Edit restaurant</a>
+        <form method="post" action="/restaurants/<%= restaurant.id %>/delete" class="inline-form"
+              data-confirm="Delete this restaurant and all its menu items and reviews?">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+    <% } %>
+  </div>
+
+  <% if (restaurant.image_url) { %>
+    <img class="detail-image" src="<%= restaurant.image_url %>" alt="<%= restaurant.name %>" />
+  <% } %>
+
+  <div class="detail-body">
+    <div class="detail-columns">
+      <div class="detail-section">
+        <h2>About</h2>
+        <p><%= restaurant.description || 'No description provided yet.' %></p>
+        <ul class="contact-list">
+          <li><strong>Address:</strong> <%= restaurant.address %></li>
+          <li><strong>Phone:</strong> <%= restaurant.phone %></li>
+        </ul>
+      </div>
+
+      <div class="detail-section">
+        <h2>Menu &amp; Prices</h2>
+        <% if (menu.length === 0) { %>
+          <p class="muted">Menu coming soon.</p>
+        <% } else { %>
+          <ul class="menu-list">
+            <% menu.forEach(function (item) { %>
+              <li class="menu-item">
+                <div class="menu-item-head">
+                  <span class="menu-name"><%= item.name %></span>
+                  <span class="menu-price"><%= Number(item.price).toFixed(2) %></span>
+                </div>
+                <% if (item.description) { %>
+                  <p class="menu-desc"><%= item.description %></p>
+                <% } %>
+              </li>
+            <% }); %>
+          </ul>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="detail-section reviews-section">
+      <h2>Reviews</h2>
+
+      <% if (currentUser && currentUser.role === 'customer') { %>
+        <div class="review-form-card">
+          <h3><%= myReview ? 'Edit your review' : 'Leave a review' %></h3>
+          <form method="post" action="<%= myReview ? '/reviews/' + myReview.id : '/restaurants/' + restaurant.id + '/reviews' %>" class="review-form" data-validate>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <div class="field">
+              <label for="rating">Your rating</label>
+              <div class="star-input" data-star-input>
+                <input type="hidden" name="rating" value="<%= myReview ? myReview.rating : 0 %>" />
+                <% for (let i = 1; i <= 5; i++) { %>
+                  <span class="star <%= myReview && myReview.rating >= i ? 'filled' : '' %>" data-star="<%= i %>" title="<%= i %> star<%= i === 1 ? '' : 's' %>">★</span>
+                <% } %>
+                <span class="star-value" data-star-value>
+                  <%= myReview ? myReview.rating + '/5' : '' %>
+                </span>
+              </div>
+            </div>
+            <div class="field">
+              <label for="comment">Comment <span class="optional">(optional)</span></label>
+              <textarea id="comment" name="comment" rows="4" maxlength="2000"
+                        placeholder="How was the food, service, and atmosphere?"><%= myReview ? myReview.comment : '' %></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">
+              <%= myReview ? 'Save changes' : 'Submit review' %>
+            </button>
+          </form>
+          <% if (myReview) { %>
+            <form method="post" action="/reviews/<%= myReview.id %>/delete" class="inline-form"
+                  data-confirm="Delete your review?">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+              <button type="submit" class="btn btn-danger">Delete review</button>
+            </form>
+          <% } %>
+        </div>
+      <% } else if (!currentUser) { %>
+        <p class="muted"><a href="/login?next=/restaurants/<%= restaurant.id %>">Log in</a> to leave a review.</p>
+      <% } else if (currentUser.role === 'owner') { %>
+        <p class="muted">Only customer accounts can leave reviews.</p>
+      <% } %>
+
+      <% if (reviews.length === 0) { %>
+        <p class="muted">No reviews yet. Be the first!</p>
+      <% } else { %>
+        <ul class="review-list">
+          <% reviews.forEach(function (rev) { %>
+            <li class="review-card">
+              <div class="review-head">
+                <% if (rev.author_avatar) { %>
+                  <img class="avatar avatar-sm" src="<%= rev.author_avatar %>" alt="<%= rev.author_name %>" />
+                <% } %>
+                <strong class="review-author"><%= rev.author_name %></strong>
+                <span class="review-stars">
+                  <% for (let i = 1; i <= 5; i++) { %>
+                    <span class="star <%= i <= rev.rating ? 'filled' : '' %>">★</span>
+                  <% } %>
+                </span>
+                <span class="review-date"><%= rev.created_at %></span>
+              </div>
+              <% if (rev.comment) { %>
+                <p class="review-comment"><%= rev.comment %></p>
+              <% } %>
+            </li>
+          <% }); %>
+        </ul>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

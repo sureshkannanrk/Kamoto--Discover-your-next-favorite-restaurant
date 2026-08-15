@@ -1,0 +1,87 @@
+<%- include('partials/header') %>
+
+<% if (role === 'owner') { %>
+  <section class="page-header">
+    <h1>Owner Dashboard</h1>
+    <p>Manage the restaurants you have added to Kamoto.</p>
+    <a href="/restaurants/new" class="btn btn-primary">Add a restaurant</a>
+  </section>
+
+  <% if (restaurants.length === 0) { %>
+    <div class="empty-state">
+      <h2>You haven't added any restaurants yet</h2>
+      <p>Add your first restaurant with menu and prices so customers can discover it.</p>
+      <a href="/restaurants/new" class="btn btn-primary">Add your first restaurant</a>
+    </div>
+  <% } else { %>
+    <div class="restaurant-grid">
+      <% restaurants.forEach(function (r) { %>
+        <div class="card restaurant-card">
+          <% if (r.image_url) { %>
+            <img class="card-image" src="<%= r.image_url %>" alt="<%= r.name %>" loading="lazy" />
+          <% } else { %>
+            <div class="card-image placeholder">🍽️</div>
+          <% } %>
+          <div class="card-body">
+            <h3 class="card-title"><%= r.name %></h3>
+            <p class="card-meta">
+              <span><%= r.cuisine %></span>
+              <span class="price-range"><%= r.price_range %></span>
+            </p>
+            <p class="card-rating">
+              <%- include('partials/_stars', { value: r.average_rating }) %>
+              <span class="rating-num"><%= Number(r.average_rating).toFixed(1) %></span>
+              <span class="review-count">(<%= r.review_count %> review<%= r.review_count === 1 ? '' : 's' %>)</span>
+            </p>
+            <div class="card-actions">
+              <a href="/restaurants/<%= r.id %>" class="btn btn-ghost btn-sm">View</a>
+              <a href="/restaurants/<%= r.id %>/edit" class="btn btn-ghost btn-sm">Edit</a>
+              <form method="post" action="/restaurants/<%= r.id %>/delete" class="inline-form"
+                    data-confirm="Delete this restaurant and all its menu items and reviews?">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } %>
+<% } else { %>
+  <section class="page-header">
+    <h1>Customer Dashboard</h1>
+    <p>Here are the restaurants you have reviewed. <a href="/">Browse more restaurants</a>.</p>
+  </section>
+
+  <% if (reviews.length === 0) { %>
+    <div class="empty-state">
+      <h2>You haven't reviewed any restaurants yet</h2>
+      <p>Explore restaurants, read their menus and prices, then share your experience.</p>
+      <a href="/" class="btn btn-primary">Discover restaurants</a>
+    </div>
+  <% } else { %>
+    <ul class="review-list">
+      <% reviews.forEach(function (rev) { %>
+        <li class="review-card">
+          <div class="review-head">
+            <a href="/restaurants/<%= rev.restaurant_id %>" class="review-restaurant"><%= rev.restaurant_name %></a>
+            <span class="review-stars">
+              <% for (let i = 1; i <= 5; i++) { %>
+                <span class="star <%= i <= rev.rating ? 'filled' : '' %>">★</span>
+              <% } %>
+            </span>
+            <span class="review-date"><%= rev.created_at %></span>
+          </div>
+          <% if (rev.comment) { %>
+            <p class="review-comment"><%= rev.comment %></p>
+          <% } %>
+          <div class="card-actions">
+            <a href="/restaurants/<%= rev.restaurant_id %>" class="btn btn-ghost btn-sm">View restaurant</a>
+          </div>
+        </li>
+      <% }); %>
+    </ul>
+  <% } %>
+<% } %>
+
+<%- include('partials/footer') %>

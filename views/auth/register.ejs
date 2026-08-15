@@ -1,0 +1,43 @@
+<%- include('../partials/header') %>
+
+<section class="auth-card card">
+  <h1>Create your Kamoto account</h1>
+  <p class="muted">Join as a customer and discover restaurants, menus, and prices.</p>
+
+  <form method="post" action="/register" class="form-card" data-validate>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+    <input type="hidden" name="role" value="<%= user.role || 'customer' %>" />
+
+    <div class="field">
+      <label for="name">Full name</label>
+      <input id="name" name="name" type="text" maxlength="100" value="<%= user.name %>" required />
+      <% if (errors.name) { %><p class="field-error"><%= errors.name %></p><% } %>
+    </div>
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" maxlength="255" value="<%= user.email %>" required />
+      <% if (errors.email) { %><p class="field-error"><%= errors.email %></p><% } %>
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" minlength="8" maxlength="128" required />
+      <p class="hint">At least 8 characters.</p>
+      <% if (errors.password) { %><p class="field-error"><%= errors.password %></p><% } %>
+    </div>
+
+    <% if (user.role === 'owner') { %>
+      <div class="dev-hint">
+        You are creating a <strong>restaurant owner</strong> account. You can list your
+        restaurant with menu and prices from your dashboard.
+      </div>
+    <% } %>
+
+    <button type="submit" class="btn btn-primary btn-block">Create account</button>
+  </form>
+
+  <p class="auth-alt">Already have an account? <a href="/login">Log in</a></p>
+</section>
+
+<%- include('../partials/footer') %>
