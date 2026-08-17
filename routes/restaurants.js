@@ -104,10 +104,16 @@ router.get(
     const cuisinesRes = await db.query('SELECT DISTINCT cuisine FROM restaurants ORDER BY cuisine');
     const cuisines = cuisinesRes.rows.map((r) => r.cuisine);
 
+    const totalRes = await db.query(
+      "SELECT COUNT(*)::int AS n FROM restaurants WHERE status = 'approved'"
+    );
+    const totalHotels = totalRes.rows[0].n;
+
     return res.render('index', {
       title: 'Kamoto',
       restaurants,
       cuisines,
+      totalHotels,
       query: q,
       selectedCuisine: cuisine,
       sort,

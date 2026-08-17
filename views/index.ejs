@@ -3,6 +3,10 @@
 <section class="hero">
   <h1>Discover your next favorite restaurant</h1>
   <p>Browse menus, compare prices, and read real reviews before you choose.</p>
+  <p class="hotel-count-badge" aria-label="Total restaurants">
+    <span class="hotel-count-number"><%= totalHotels %></span>
+    <%= totalHotels === 1 ? 'restaurant' : 'restaurants' %> listed on Kamoto
+  </p>
 </section>
 
 <form method="get" action="/" class="search-bar">
