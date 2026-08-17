@@ -55,6 +55,11 @@ const config = {
   supabaseUrl: process.env.SUPABASE_URL,
   supabaseSecretKey: process.env.SUPABASE_SECRET_KEY,
   supabaseBucket: process.env.SUPABASE_BUCKET || 'images',
+  brevo: {
+    apiKey: process.env.BREVO_API_KEY,
+    fromEmail: process.env.BREVO_FROM_EMAIL,
+    fromName: process.env.BREVO_FROM_NAME || 'Kamoto',
+  },
   viewsPath: path.join(__dirname, 'views'),
   publicPath: path.join(__dirname, 'public'),
   priceRanges: ['$', '$$', '$$$', '$$$$'],
