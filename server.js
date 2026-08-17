@@ -12,6 +12,7 @@ const { csrf, csrfProtection, notFound, errorHandler } = require('./middleware/e
 const authRoutes = require('./routes/auth');
 const restaurantRoutes = require('./routes/restaurants');
 const reviewRoutes = require('./routes/reviews');
+const adminRoutes = require('./routes/admin');
 
 function createApp() {
   const app = express();
@@ -62,6 +63,7 @@ function createApp() {
   app.use('/', authRoutes);
   app.use('/', restaurantRoutes);
   app.use('/', reviewRoutes);
+  app.use('/', adminRoutes);
 
   app.use(notFound);
   app.use(errorHandler);

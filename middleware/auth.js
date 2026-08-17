@@ -57,6 +57,25 @@ function requireOwner(req, res, next) {
 }
 
 /**
+ * Restrict a route to admin accounts only. Responds 403 for non-admins.
+ */
+function isAdmin(req, res, next) {
+  if (!req.session.user) {
+    req.session.flash = { type: 'error', message: 'Please log in to continue.' };
+    return res.redirect('/login');
+  }
+  if (req.session.user.role !== 'admin') {
+    return res.status(403).render('error', {
+      title: 'Forbidden',
+      code: 403,
+      message: 'This area is restricted to administrators.',
+      showStack: false,
+    });
+  }
+  return next();
+}
+
+/**
  * Fetch a restaurant by id, ensuring it exists. On success attaches the row
  * to req.restaurant and calls next(); otherwise responds with a 404 page.
  */
@@ -128,6 +147,7 @@ module.exports = {
   requireAuth,
   requireCustomer,
   requireOwner,
+  isAdmin,
   loadRestaurant,
   requireRestaurantOwner,
   verifyPassword,

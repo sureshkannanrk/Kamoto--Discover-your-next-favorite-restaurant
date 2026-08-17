@@ -1,0 +1,170 @@
+<%- include('../partials/header') %>
+
+<section class="page-header">
+  <h1>Admin Portal</h1>
+  <p>Review and moderate hotel submissions before they go live.</p>
+</section>
+
+<div class="admin-tabs">
+  <a href="/admin/restaurants?status=pending" class="tab <%= status === 'pending' ? 'active' : '' %>">
+    In Review <span class="tab-count"><%= counts.pending %></span>
+  </a>
+  <a href="/admin/restaurants?status=approved" class="tab <%= status === 'approved' ? 'active' : '' %>">
+    Live <span class="tab-count"><%= counts.approved %></span>
+  </a>
+  <a href="/admin/restaurants?status=rejected" class="tab <%= status === 'rejected' ? 'active' : '' %>">
+    Rejected <span class="tab-count"><%= counts.rejected %></span>
+  </a>
+  <a href="/admin/restaurants?status=all" class="tab <%= status === 'all' ? 'active' : '' %>">All</a>
+</div>
+
+<% if (restaurants.length === 0) { %>
+  <div class="empty-state">
+    <h2>No submissions in this view</h2>
+    <p>New owner submissions will appear here for approval.</p>
+  </div>
+<% } else { %>
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Photos</th>
+          <th>Hotel</th>
+          <th>Owner</th>
+          <th>Location</th>
+          <th>Cuisine</th>
+          <th>Contact</th>
+          <th>Details</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% restaurants.forEach(function (r) { %>
+          <% const img = imageUrl(r.image_url); %>
+          <tr id="restaurant-<%= r.id %>">
+            <td>
+              <% if (img) { %>
+                <img class="admin-thumb" src="<%= img %>" alt="<%= r.name %>" />
+              <% } else { %>
+                <div class="admin-thumb admin-thumb-empty">🍽️</div>
+              <% } %>
+              <% if (Array.isArray(r.menu_images) && r.menu_images.length) { %>
+                <div class="admin-menu-thumbs">
+                  <% r.menu_images.forEach(function (m) { %>
+                    <img class="admin-menu-thumb" src="<%= imageUrl(m) %>" alt="Menu photo" title="Menu photo" />
+                  <% }); %>
+                </div>
+              <% } %>
+            </td>
+            <td>
+              <strong><%= r.name %></strong>
+              <% if (r.description) { %>
+                <p class="admin-sub"><%= r.description %></p>
+              <% } %>
+            </td>
+            <td>
+              <strong><%= r.owner_name %></strong>
+              <p class="admin-sub"><%= r.owner_email %></p>
+            </td>
+            <td>
+              <%= r.city_area %>
+              <% if (r.full_address) { %><p class="admin-sub"><%= r.full_address %></p><% } %>
+              <% if (r.landmark) { %><p class="admin-sub"><%= r.landmark %></p><% } %>
+            </td>
+            <td><%= r.cuisine %></td>
+            <td>
+              <%= r.phone %>
+              <% if (r.timings) { %><p class="admin-sub"><%= r.timings %></p><% } %>
+            </td>
+            <td>
+              <% if (r.dietary_type) { %><p class="admin-sub">Diet: <%= r.dietary_type === 'pure_veg' ? 'Pure Veg' : r.dietary_type === 'non_veg' ? 'Non-Veg' : 'Veg & Non-Veg' %></p><% } %>
+              <% if (r.seating_capacity) { %><p class="admin-sub">Seats: <%= r.seating_capacity %></p><% } %>
+              <% if (r.parking_available) { %><p class="admin-sub">Parking: Yes</p><% } %>
+              <% if (r.fssai_license) { %><p class="admin-sub">FSSAI: <%= r.fssai_license %></p><% } %>
+              <% if (r.amenities) { %><p class="admin-sub"><%= r.amenities %></p><% } %>
+              <% if (r.website_url) { %><p class="admin-sub"><a href="<%= r.website_url %>" target="_blank" rel="noopener">Website</a></p><% } %>
+              <% if (r.status === 'rejected' && r.rejection_reason) { %>
+                <p class="admin-sub rejected-hint">Rejected: <%= r.rejection_reason %></p>
+              <% } %>
+            </td>
+            <td>
+              <% if (r.status === 'pending') { %>
+                <span class="status-badge status-pending">In Review</span>
+              <% } else if (r.status === 'approved') { %>
+                <span class="status-badge status-approved">Live</span>
+              <% } else { %>
+                <span class="status-badge status-rejected">Rejected</span>
+              <% } %>
+            </td>
+            <td>
+              <div class="admin-actions">
+                <a href="/restaurants/<%= r.id %>" class="btn btn-ghost btn-sm" target="_blank" rel="noopener">View</a>
+                <% if (r.status !== 'approved') { %>
+                  <form method="post" action="/admin/restaurants/<%= r.id %>/approve" class="inline-form">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                    <button type="submit" class="btn btn-primary btn-sm">Approve</button>
+                  </form>
+                <% } %>
+                <% if (r.status !== 'rejected') { %>
+                  <button type="button" class="btn btn-danger btn-sm" data-reject-open="<%= r.id %>">Reject</button>
+                <% } %>
+              </div>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<div class="modal-overlay" data-reject-modal hidden>
+  <div class="modal">
+    <h2>Reject submission</h2>
+    <p class="muted">Provide a clear reason so the owner knows what to fix. The owner will be notified by email.</p>
+    <form method="post" data-reject-form>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <div class="field">
+        <label for="rejection_reason">Rejection reason <span class="required">(required)</span></label>
+        <textarea id="rejection_reason" name="rejection_reason" rows="4" maxlength="1000" required
+                  placeholder="e.g. Cover photo is blurry and the FSSAI license is missing."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-reject-cancel>Cancel</button>
+        <button type="submit" class="btn btn-danger">Reject &amp; notify owner</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var modal = document.querySelector('[data-reject-modal]');
+    var form = document.querySelector('[data-reject-form]');
+    var reason = document.getElementById('rejection_reason');
+    if (!modal || !form) return;
+
+    var currentStatus = '<%= status %>';
+
+    function openReject(id) {
+      form.action = '/admin/restaurants/' + id + '/reject';
+      reason.value = '';
+      modal.hidden = false;
+      setTimeout(function () { reason.focus(); }, 50);
+    }
+
+    document.querySelectorAll('[data-reject-open]').forEach(function (btn) {
+      btn.addEventListener('click', function () { openReject(btn.getAttribute('data-reject-open')); });
+    });
+
+    document.querySelectorAll('[data-reject-cancel]').forEach(function (btn) {
+      btn.addEventListener('click', function () { modal.hidden = true; });
+    });
+
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) modal.hidden = true;
+    });
+  })();
+</script>
+
+<%- include('../partials/footer') %>

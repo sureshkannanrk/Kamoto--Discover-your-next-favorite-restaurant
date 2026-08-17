@@ -44,7 +44,7 @@
           <% restaurants.forEach(function (r) { %>
             <li>
               <a href="/restaurants/<%= r.id %>"><%= r.name %></a>
-              <span class="muted"><%= r.cuisine %> &middot; <%= r.price_range %></span>
+              <span class="muted"><%= r.cuisine %> &middot; <%= r.city_area %></span>
             </li>
           <% }); %>
         </ul>

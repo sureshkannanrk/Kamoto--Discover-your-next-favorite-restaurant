@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
   name          TEXT        NOT NULL,
   email         CITEXT      NOT NULL UNIQUE,
   password_hash TEXT        NOT NULL,
-  role          TEXT        NOT NULL CHECK (role IN ('customer', 'owner')),
+  role          TEXT        NOT NULL CHECK (role IN ('customer', 'owner', 'admin')),
   avatar_url    TEXT        NOT NULL DEFAULT '',
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -32,9 +32,22 @@ CREATE TABLE IF NOT EXISTS restaurants (
   cuisine     TEXT        NOT NULL,
   address     TEXT        NOT NULL,
   phone       TEXT        NOT NULL,
-  price_range TEXT        NOT NULL CHECK (price_range IN ('$', '$$', '$$$', '$$$$')),
   description TEXT        NOT NULL DEFAULT '',
   image_url   TEXT        NOT NULL DEFAULT '',
+  status      TEXT        NOT NULL DEFAULT 'pending'
+              CHECK (status IN ('pending', 'approved', 'rejected')),
+  rejection_reason  TEXT        NOT NULL DEFAULT '',
+  timings           TEXT        NOT NULL DEFAULT '',
+  full_address      TEXT        NOT NULL DEFAULT '',
+  city_area         TEXT        NOT NULL DEFAULT '',
+  landmark          TEXT        NOT NULL DEFAULT '',
+  fssai_license     TEXT        NOT NULL DEFAULT '',
+  seating_capacity  INTEGER     NOT NULL DEFAULT 0,
+  dietary_type      TEXT        NOT NULL DEFAULT '',
+  parking_available BOOLEAN     NOT NULL DEFAULT FALSE,
+  amenities         TEXT        NOT NULL DEFAULT '',
+  website_url       TEXT        NOT NULL DEFAULT '',
+  menu_images       TEXT[]      NOT NULL DEFAULT '{}',
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -84,6 +97,9 @@ CREATE INDEX IF NOT EXISTS idx_email_verifications_email
 
 CREATE INDEX IF NOT EXISTS idx_restaurants_owner
   ON restaurants(owner_id);
+
+CREATE INDEX IF NOT EXISTS idx_restaurants_status
+  ON restaurants(status);
 
 CREATE INDEX IF NOT EXISTS idx_menu_restaurant
   ON menu_items(restaurant_id);

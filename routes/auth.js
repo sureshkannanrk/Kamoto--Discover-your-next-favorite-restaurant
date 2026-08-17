@@ -691,7 +691,7 @@ router.get(
 
     const restaurants = user.role === 'owner'
       ? (await db.query(
-          'SELECT id, name, cuisine, price_range FROM restaurants WHERE owner_id = $1 ORDER BY created_at DESC',
+          'SELECT id, name, cuisine, city_area FROM restaurants WHERE owner_id = $1 ORDER BY created_at DESC',
           [user.id]
         )).rows
       : [];

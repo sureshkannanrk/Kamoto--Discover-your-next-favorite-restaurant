@@ -2,17 +2,23 @@
   const action = editing
     ? '/restaurants/' + restaurant.id
     : '/restaurants';
+
+  function sel(name, value, expected) {
+    return (String(value || '') === expected) ? 'selected' : '';
+  }
 %>
 
 <form method="post" action="<%= action %>" class="card form-card" data-validate enctype="multipart/form-data">
   <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
 
   <div class="form-section">
-    <h2>Details</h2>
+    <h2>Basic Info</h2>
 
     <div class="field">
-      <label for="name">Restaurant name</label>
-      <input id="name" name="name" type="text" maxlength="100" value="<%= restaurant.name || '' %>" required />
+      <label for="name">Hotel / Restaurant name</label>
+      <input id="name" name="name" type="text" maxlength="100" value="<%= restaurant.name || '' %>"
+             required minlength="3" class="uppercase-input" data-uppercase
+             placeholder="e.g. THE GREEN TABLE" autocomplete="off" />
       <% if (errors.name) { %><p class="field-error"><%= errors.name %></p><% } %>
     </div>
 
@@ -23,46 +29,125 @@
         <% if (errors.cuisine) { %><p class="field-error"><%= errors.cuisine %></p><% } %>
       </div>
       <div class="field">
-        <label for="price_range">Price range</label>
-        <select id="price_range" name="price_range" required>
-          <option value="">Select...</option>
-          <% priceRanges.forEach(function (p) { %>
-            <option value="<%= p %>" <%= restaurant.price_range === p ? 'selected' : '' %>><%= p %> <%= p.length === 1 ? 'Inexpensive' : p.length === 2 ? 'Moderate' : p.length === 3 ? 'Pricey' : 'Very expensive' %></option>
-          <% }); %>
-        </select>
-        <% if (errors.price_range) { %><p class="field-error"><%= errors.price_range %></p><% } %>
+        <label for="phone">Mobile number</label>
+        <input id="phone" name="phone" type="tel" maxlength="10" value="<%= restaurant.phone || '' %>"
+               required pattern="[6-9][0-9]{9}" inputmode="numeric"
+               title="Enter a valid 10-digit mobile number."
+               placeholder="e.g. 9876543210" />
+        <% if (errors.phone) { %><p class="field-error"><%= errors.phone %></p><% } %>
       </div>
-    </div>
-
-    <div class="field">
-      <label for="address">Address</label>
-      <input id="address" name="address" type="text" maxlength="255" value="<%= restaurant.address || '' %>" required />
-      <% if (errors.address) { %><p class="field-error"><%= errors.address %></p><% } %>
     </div>
 
     <div class="field-row">
       <div class="field">
-        <label for="phone">Phone</label>
-        <input id="phone" name="phone" type="text" maxlength="30" value="<%= restaurant.phone || '' %>" required />
-        <% if (errors.phone) { %><p class="field-error"><%= errors.phone %></p><% } %>
+        <label for="dietary_type">Dietary type</label>
+        <select id="dietary_type" name="dietary_type">
+          <option value="">Select...</option>
+          <option value="pure_veg" <%= sel('dietary_type', restaurant.dietary_type, 'pure_veg') %>>Pure Veg</option>
+          <option value="non_veg" <%= sel('dietary_type', restaurant.dietary_type, 'non_veg') %>>Non-Veg</option>
+          <option value="veg_non_veg" <%= sel('dietary_type', restaurant.dietary_type, 'veg_non_veg') %>>Veg &amp; Non-Veg</option>
+        </select>
+        <% if (errors.dietary_type) { %><p class="field-error"><%= errors.dietary_type %></p><% } %>
       </div>
       <div class="field">
-        <label for="image">Photo <span class="optional">(optional, from your device)</span></label>
-        <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/gif,image/webp" />
-        <% if (errors.image) { %><p class="field-error"><%= errors.image %></p><% } %>
-        <% if (imageUrl(restaurant.image_url)) { %>
-          <p class="hint current-image">
-            Current photo:
-            <img class="avatar" src="<%= imageUrl(restaurant.image_url) %>" alt="Current photo" />
-          </p>
-        <% } %>
+        <label for="timings">Opening hours</label>
+        <input id="timings" name="timings" type="text" maxlength="60" value="<%= restaurant.timings || '' %>" placeholder="e.g. 09:00 AM - 10:00 PM" required />
+        <% if (errors.timings) { %><p class="field-error"><%= errors.timings %></p><% } %>
       </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="fssai_license">FSSAI license</label>
+        <input id="fssai_license" name="fssai_license" type="text" maxlength="30" value="<%= restaurant.fssai_license || '' %>" placeholder="e.g. 11522999000123" />
+        <% if (errors.fssai_license) { %><p class="field-error"><%= errors.fssai_license %></p><% } %>
+      </div>
+      <div class="field">
+        <label for="seating_capacity">Seating capacity</label>
+        <input id="seating_capacity" name="seating_capacity" type="number" min="0" max="10000" value="<%= restaurant.seating_capacity !== 0 ? restaurant.seating_capacity : '' %>" placeholder="e.g. 50" />
+        <% if (errors.seating_capacity) { %><p class="field-error"><%= errors.seating_capacity %></p><% } %>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="website_url">Website / Instagram</label>
+        <input id="website_url" name="website_url" type="url" maxlength="255" value="<%= restaurant.website_url || '' %>" placeholder="https://..." />
+        <% if (errors.website_url) { %><p class="field-error"><%= errors.website_url %></p><% } %>
+      </div>
+      <div class="field">
+        <label for="parking_available">Parking available</label>
+        <select id="parking_available" name="parking_available">
+          <option value="">Select...</option>
+          <option value="yes" <%= restaurant.parking_available === true ? 'selected' : '' %>>Yes</option>
+          <option value="no" <%= restaurant.parking_available === false ? 'selected' : '' %>>No</option>
+        </select>
+        <% if (errors.parking_available) { %><p class="field-error"><%= errors.parking_available %></p><% } %>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="amenities">Amenities <span class="optional">(comma-separated)</span></label>
+      <input id="amenities" name="amenities" type="text" maxlength="500" value="<%= restaurant.amenities || '' %>" placeholder="e.g. AC, Wi-Fi, Outdoor Seating, Wheelchair Access" />
+      <% if (errors.amenities) { %><p class="field-error"><%= errors.amenities %></p><% } %>
     </div>
 
     <div class="field">
       <label for="description">Description <span class="optional">(optional)</span></label>
       <textarea id="description" name="description" rows="4" maxlength="2000"><%= restaurant.description || '' %></textarea>
       <% if (errors.description) { %><p class="field-error"><%= errors.description %></p><% } %>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h2>Address</h2>
+
+    <div class="field">
+      <label for="full_address">Full / street address</label>
+      <textarea id="full_address" name="full_address" rows="2" maxlength="500" placeholder="Plot / building, street, area" required><%= restaurant.full_address || '' %></textarea>
+      <% if (errors.full_address) { %><p class="field-error"><%= errors.full_address %></p><% } %>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="city_area">City / locality</label>
+        <input id="city_area" name="city_area" type="text" maxlength="100" value="<%= restaurant.city_area || '' %>" placeholder="e.g. Anna Nagar, Chennai" required />
+        <% if (errors.city_area) { %><p class="field-error"><%= errors.city_area %></p><% } %>
+      </div>
+      <div class="field">
+        <label for="landmark">Nearby landmark</label>
+        <input id="landmark" name="landmark" type="text" maxlength="150" value="<%= restaurant.landmark || '' %>" placeholder="e.g. Opposite Metro Station" />
+        <% if (errors.landmark) { %><p class="field-error"><%= errors.landmark %></p><% } %>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h2>Media Uploads</h2>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="image">Cover photo <span class="optional"><%= editing ? '(optional, keep current)' : '(required)' %></span></label>
+        <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/gif,image/webp" <%= editing ? '' : 'required' %> data-image-preview />
+        <% if (errors.image) { %><p class="field-error"><%= errors.image %></p><% } %>
+        <div class="image-preview-wrap" data-preview-wrap <%= editing && imageUrl(restaurant.image_url) ? '' : 'hidden' %>>
+          <img class="image-preview" src="<%= editing ? imageUrl(restaurant.image_url) : '' %>" alt="Cover photo preview" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="menu_image">Menu photo(s) <span class="optional"><%= editing ? '(optional, keep current)' : '(required)' %></span></label>
+        <input id="menu_image" name="menu_image" type="file" accept="image/jpeg,image/png,image/gif,image/webp"
+               <%= editing ? '' : 'required' %> multiple data-menu-image-preview />
+        <% if (errors.menu_image) { %><p class="field-error"><%= errors.menu_image %></p><% } %>
+        <% if (editing && Array.isArray(restaurant.menu_images) && restaurant.menu_images.length) { %>
+          <div class="menu-gallery" data-current-menu-gallery>
+            <% restaurant.menu_images.forEach(function (m) { %>
+              <img class="menu-thumb" src="<%= imageUrl(m) %>" alt="Menu photo" />
+            <% }); %>
+          </div>
+        <% } %>
+        <div class="menu-gallery" data-menu-preview></div>
+      </div>
     </div>
   </div>
 
@@ -97,7 +182,10 @@
   </div>
 
   <div class="form-actions">
-    <button type="submit" class="btn btn-primary"><%= editing ? 'Save changes' : 'Add restaurant' %></button>
+    <button type="submit" class="btn btn-primary" data-submit-spinner>
+      <span class="btn-label"><%= editing ? 'Save changes' : 'Submit for review' %></span>
+      <span class="spinner" aria-hidden="true"></span>
+    </button>
     <a href="<%= editing ? '/restaurants/' + restaurant.id : '/dashboard' %>" class="btn btn-ghost">Cancel</a>
   </div>
 </form>

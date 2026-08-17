@@ -100,6 +100,68 @@
     wireRemoveButtons();
   }
 
+  function setupUppercase() {
+    document.querySelectorAll('[data-uppercase]').forEach(function (input) {
+      input.addEventListener('input', function () {
+        var start = input.selectionStart;
+        var end = input.selectionEnd;
+        input.value = input.value.toUpperCase();
+        input.setSelectionRange(start, end);
+      });
+    });
+  }
+
+  function setupImagePreview() {
+    document.querySelectorAll('[data-image-preview]').forEach(function (input) {
+      var wrap = input.closest('.field').querySelector('[data-preview-wrap]');
+      if (!wrap) return;
+      input.addEventListener('change', function () {
+        var file = input.files && input.files[0];
+        if (file && file.type.indexOf('image/') === 0) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            var img = wrap.querySelector('img');
+            img.src = e.target.result;
+            wrap.hidden = false;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    });
+
+    document.querySelectorAll('[data-menu-image-preview]').forEach(function (input) {
+      var container = document.querySelector('[data-menu-preview]');
+      if (!container) return;
+      input.addEventListener('change', function () {
+        container.innerHTML = '';
+        Array.prototype.forEach.call(input.files || [], function (file) {
+          if (file.type.indexOf('image/') !== 0) return;
+          var img = document.createElement('img');
+          img.className = 'menu-thumb';
+          img.alt = 'Menu photo preview';
+          var reader = new FileReader();
+          reader.onload = function (e) { img.src = e.target.result; };
+          reader.readAsDataURL(file);
+          container.appendChild(img);
+        });
+      });
+    });
+  }
+
+  function setupSubmitSpinners() {
+    document.querySelectorAll('form[data-validate]').forEach(function (form) {
+      form.addEventListener('submit', function (e) {
+        var btn = form.querySelector('[data-submit-spinner]');
+        if (!btn) return;
+        if (form.checkValidity && !form.checkValidity()) {
+          return;
+        }
+        btn.disabled = true;
+        btn.classList.add('loading');
+      });
+    });
+  }
+
   function clearClientErrors() {
     document.querySelectorAll('.field-error').forEach(function (el) {
       el.style.display = 'none';
@@ -194,5 +256,8 @@
     setupValidation();
     setupStarRating();
     setupMobileNav();
+    setupUppercase();
+    setupImagePreview();
+    setupSubmitSpinners();
   });
 })();

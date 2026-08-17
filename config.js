@@ -62,7 +62,6 @@ const config = {
   },
   viewsPath: path.join(__dirname, 'views'),
   publicPath: path.join(__dirname, 'public'),
-  priceRanges: ['$', '$$', '$$$', '$$$$'],
   maxMenuItems: 50,
   maxReviewLength: 2000,
   otp: {

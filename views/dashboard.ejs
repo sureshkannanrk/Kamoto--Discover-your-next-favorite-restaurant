@@ -7,6 +7,11 @@
     <a href="/restaurants/new" class="btn btn-primary">Add a restaurant</a>
   </section>
 
+  <div class="flash flash-info notice">
+    Newly submitted restaurants require <strong>admin review</strong> before they go live.
+    Track their status below and check back for updates.
+  </div>
+
   <% if (restaurants.length === 0) { %>
     <div class="empty-state">
       <h2>You haven't added any restaurants yet</h2>
@@ -24,16 +29,30 @@
             <div class="card-image placeholder">🍽️</div>
           <% } %>
           <div class="card-body">
-            <h3 class="card-title"><%= r.name %></h3>
+            <div class="card-title-row">
+              <h3 class="card-title"><%= r.name %></h3>
+              <% if (r.status === 'pending') { %>
+                <span class="status-badge status-pending">Under Review by Admin</span>
+              <% } else if (r.status === 'approved') { %>
+                <span class="status-badge status-approved">Live</span>
+              <% } else if (r.status === 'rejected') { %>
+                <span class="status-badge status-rejected">Rejected</span>
+              <% } %>
+            </div>
             <p class="card-meta">
               <span><%= r.cuisine %></span>
-              <span class="price-range"><%= r.price_range %></span>
             </p>
             <p class="card-rating">
               <%- include('partials/_stars', { value: r.average_rating }) %>
               <span class="rating-num"><%= Number(r.average_rating).toFixed(1) %></span>
               <span class="review-count">(<%= r.review_count %> review<%= r.review_count === 1 ? '' : 's' %>)</span>
             </p>
+            <% if (r.status === 'rejected') { %>
+              <p class="hint rejected-hint">
+                This listing was not approved. Reason: <%= r.rejection_reason || 'No reason provided' %>.
+                Edit the details and resubmit for review.
+              </p>
+            <% } %>
             <div class="card-actions">
               <a href="/restaurants/<%= r.id %>" class="btn btn-ghost btn-sm">View</a>
               <a href="/restaurants/<%= r.id %>/edit" class="btn btn-ghost btn-sm">Edit</a>

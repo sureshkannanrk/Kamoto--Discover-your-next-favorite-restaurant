@@ -126,10 +126,16 @@ async function seed() {
       password: 'Customer123!',
       role: 'customer',
     });
+    const admin = await seedUser({
+      name: 'Kamoto Admin',
+      email: 'admin@kamoto.test',
+      password: 'Admin123!',
+      role: 'admin',
+    });
 
-    if (owner || customer) {
+    if (owner || customer || admin) {
       // eslint-disable-next-line no-console
-      console.log('[db] Seeded demo accounts: owner@kamoto.test / Owner123! and customer@kamoto.test / Customer123!');
+      console.log('[db] Seeded demo accounts: owner@kamoto.test / Owner123!, customer@kamoto.test / Customer123!, admin@kamoto.test / Admin123!');
     }
   }
 

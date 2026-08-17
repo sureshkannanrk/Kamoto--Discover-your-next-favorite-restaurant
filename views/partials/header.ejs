@@ -44,6 +44,9 @@
         <% if (currentUser && currentUser.role === 'owner') { %>
           <a href="/restaurants/new" class="nav-item">Add Restaurant</a>
         <% } %>
+        <% if (currentUser && currentUser.role === 'admin') { %>
+          <a href="/admin/restaurants" class="nav-item">Admin Portal</a>
+        <% } %>
         <% if (!currentUser || currentUser.role === 'customer') { %>
           <a href="/register?role=owner" class="nav-item">Your Restaurant</a>
         <% } %>

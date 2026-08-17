@@ -10,7 +10,7 @@
       <h1><%= restaurant.name %></h1>
       <p class="detail-meta">
         <span class="badge"><%= restaurant.cuisine %></span>
-        <span class="badge price-range"><%= restaurant.price_range %></span>
+        <span class="badge"><%= restaurant.dietary_type === 'pure_veg' ? 'Pure Veg' : restaurant.dietary_type === 'non_veg' ? 'Non-Veg' : restaurant.dietary_type === 'veg_non_veg' ? 'Veg & Non-Veg' : '' %></span>
       </p>
       <div class="detail-rating">
         <%- include('partials/_stars', { value: stats.averageRating }) %>
@@ -41,9 +41,46 @@
         <h2>About</h2>
         <p><%= restaurant.description || 'No description provided yet.' %></p>
         <ul class="contact-list">
-          <li><strong>Address:</strong> <%= restaurant.address %></li>
+          <% if (restaurant.full_address) { %>
+            <li><strong>Address:</strong> <%= restaurant.full_address %></li>
+          <% } %>
+          <% if (restaurant.city_area) { %>
+            <li><strong>City / Locality:</strong> <%= restaurant.city_area %></li>
+          <% } %>
+          <% if (restaurant.landmark) { %>
+            <li><strong>Landmark:</strong> <%= restaurant.landmark %></li>
+          <% } %>
           <li><strong>Phone:</strong> <%= restaurant.phone %></li>
+          <% if (restaurant.timings) { %>
+            <li><strong>Timings:</strong> <%= restaurant.timings %></li>
+          <% } %>
+          <% if (restaurant.fssai_license) { %>
+            <li><strong>FSSAI License:</strong> <%= restaurant.fssai_license %></li>
+          <% } %>
+          <% if (restaurant.seating_capacity) { %>
+            <li><strong>Seating Capacity:</strong> <%= restaurant.seating_capacity %></li>
+          <% } %>
+          <% if (restaurant.parking_available) { %>
+            <li><strong>Parking:</strong> Available</li>
+          <% } %>
+          <% if (restaurant.amenities) { %>
+            <li><strong>Amenities:</strong> <%= restaurant.amenities %></li>
+          <% } %>
+          <% if (restaurant.website_url) { %>
+            <li><strong>Website:</strong> <a href="<%= restaurant.website_url %>" target="_blank" rel="noopener"><%= restaurant.website_url %></a></li>
+          <% } %>
         </ul>
+
+        <% if (Array.isArray(restaurant.menu_images) && restaurant.menu_images.length) { %>
+          <h3 class="menu-photos-title">Menu Photos</h3>
+          <div class="menu-gallery menu-gallery-lg">
+            <% restaurant.menu_images.forEach(function (m) { %>
+              <a href="<%= imageUrl(m) %>" target="_blank" rel="noopener">
+                <img class="menu-thumb menu-thumb-lg" src="<%= imageUrl(m) %>" alt="Menu photo" loading="lazy" />
+              </a>
+            <% }); %>
+          </div>
+        <% } %>
       </div>
 
       <div class="detail-section">
