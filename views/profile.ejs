@@ -9,8 +9,8 @@
   <section class="card profile-edit-card">
     <h2>Profile photo</h2>
     <div class="profile-info">
-      <% if (currentUser.avatar_url) { %>
-        <img class="avatar avatar-lg" src="<%= currentUser.avatar_url %>" alt="<%= currentUser.name %>" />
+      <% if (imageUrl(currentUser.avatar_url)) { %>
+        <img class="avatar avatar-lg" src="<%= imageUrl(currentUser.avatar_url) %>" alt="<%= currentUser.name %>" />
       <% } else { %>
         <div class="avatar avatar-lg placeholder-avatar">👤</div>
       <% } %>

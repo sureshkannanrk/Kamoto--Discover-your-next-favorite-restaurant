@@ -101,7 +101,7 @@ router.get(
     const cuisines = cuisinesRes.rows.map((r) => r.cuisine);
 
     return res.render('index', {
-      title: 'Discover Restaurants',
+      title: 'Kamoto',
       restaurants,
       cuisines,
       query: q,

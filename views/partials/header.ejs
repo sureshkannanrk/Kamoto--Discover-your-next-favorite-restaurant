@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title %> | Kamoto</title>
+  <title><%= title === 'Kamoto' ? 'Kamoto' : 'Kamoto | ' + title %></title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
@@ -61,8 +61,8 @@
 
         <% if (currentUser) { %>
           <a href="/profile" class="profile-btn" title="My Profile" aria-label="My Profile">
-            <% if (currentUser.avatar_url) { %>
-              <img class="avatar avatar-sm" src="<%= currentUser.avatar_url %>" alt="" />
+            <% if (imageUrl(currentUser.avatar_url)) { %>
+              <img class="avatar avatar-sm" src="<%= imageUrl(currentUser.avatar_url) %>" alt="" />
             <% } else { %>
               <span class="avatar avatar-sm placeholder-avatar">👤</span>
             <% } %>

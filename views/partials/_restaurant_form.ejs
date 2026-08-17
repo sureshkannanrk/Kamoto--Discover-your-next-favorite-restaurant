@@ -50,10 +50,10 @@
         <label for="image">Photo <span class="optional">(optional, from your device)</span></label>
         <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/gif,image/webp" />
         <% if (errors.image) { %><p class="field-error"><%= errors.image %></p><% } %>
-        <% if (restaurant.image_url) { %>
+        <% if (imageUrl(restaurant.image_url)) { %>
           <p class="hint current-image">
             Current photo:
-            <img class="avatar" src="<%= restaurant.image_url %>" alt="Current photo" />
+            <img class="avatar" src="<%= imageUrl(restaurant.image_url) %>" alt="Current photo" />
           </p>
         <% } %>
       </div>

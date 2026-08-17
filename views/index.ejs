@@ -45,9 +45,10 @@
 <% } else { %>
   <div class="restaurant-grid">
     <% restaurants.forEach(function (r) { %>
+      <% const img = imageUrl(r.image_url); %>
       <a href="/restaurants/<%= r.id %>" class="card restaurant-card">
-        <% if (r.image_url) { %>
-          <img class="card-image" src="<%= r.image_url %>" alt="<%= r.name %>" loading="lazy" />
+        <% if (img) { %>
+          <img class="card-image" src="<%= img %>" alt="<%= r.name %>" loading="lazy" />
         <% } else { %>
           <div class="card-image placeholder">🍽️</div>
         <% } %>

@@ -2,6 +2,7 @@
 
 const bcrypt = require('bcryptjs');
 const { getDb } = require('../db/init');
+const { resolveStoredUrl } = require('../lib/uploads');
 
 /**
  * Attach the logged-in user (if any) to res.locals for every view.
@@ -9,6 +10,7 @@ const { getDb } = require('../db/init');
 function loadUser(req, res, next) {
   res.locals.currentUser = req.session.user || null;
   res.locals.flash = req.session.flash || {};
+  res.locals.imageUrl = resolveStoredUrl;
   delete req.session.flash;
   next();
 }

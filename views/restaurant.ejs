@@ -30,8 +30,9 @@
     <% } %>
   </div>
 
-  <% if (restaurant.image_url) { %>
-    <img class="detail-image" src="<%= restaurant.image_url %>" alt="<%= restaurant.name %>" />
+  <% const restaurantImg = imageUrl(restaurant.image_url); %>
+  <% if (restaurantImg) { %>
+    <img class="detail-image" src="<%= restaurantImg %>" alt="<%= restaurant.name %>" />
   <% } %>
 
   <div class="detail-body">
@@ -117,8 +118,8 @@
           <% reviews.forEach(function (rev) { %>
             <li class="review-card">
               <div class="review-head">
-                <% if (rev.author_avatar) { %>
-                  <img class="avatar avatar-sm" src="<%= rev.author_avatar %>" alt="<%= rev.author_name %>" />
+                <% if (imageUrl(rev.author_avatar)) { %>
+                  <img class="avatar avatar-sm" src="<%= imageUrl(rev.author_avatar) %>" alt="<%= rev.author_name %>" />
                 <% } %>
                 <strong class="review-author"><%= rev.author_name %></strong>
                 <span class="review-stars">
